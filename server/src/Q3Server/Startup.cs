@@ -5,6 +5,7 @@ using Owin;
 using Microsoft.AspNet.SignalR;
 using Microsoft.Owin.Logging;
 using System.Diagnostics;
+using Microsoft.Owin.Cors;
 
 [assembly: OwinStartup(typeof(Q3Server.Startup))]
 
@@ -23,7 +24,11 @@ namespace Q3Server
                     app.CreateLogger<QHub>()));
 
             app.Use<SimpleHeaderAuthenticator>();
-            app.MapSignalR();
+            app.UseCors(CorsOptions.AllowAll);
+            app.MapSignalR(new HubConfiguration()
+            {
+                EnableJSONP = true
+            });
         }
     }
 }
