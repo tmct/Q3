@@ -92,9 +92,21 @@ namespace Q3Server
             UpdateStatus(QueueStatus.Activated);
         }
 
+        internal void Deactivate()
+        {
+            UpdateStatus(QueueStatus.Waiting);
+        }
+
         public override string ToString()
         {
             return "Q" + this.Id + ": " + this.Name;
+        }
+
+        public string Describe()
+        {
+            return ToString()
+                + "; Members: [" + string.Join(", ", Members.Select(u => u.UserName)) + "]; Messages: ["
+                + string.Join(", ", Messages.Select(m => m.Sender.UserName + ": " + m.Content.Replace("\n", "").Substring(0,32))) + "]";
         }
 
         internal void Close()
@@ -106,7 +118,7 @@ namespace Q3Server
         {
             lock (lockable)
             {
-                if (Status < newStatus)
+                if (Status != newStatus)
                 {
                     Status = newStatus;
 

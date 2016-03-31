@@ -11,6 +11,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using WpfAnimatedGif;
@@ -52,7 +53,6 @@ namespace Q3Client
             this.OuterPanel.Children.Add(chatControls);
 
             MessagesChanged();
-
         }
 
         private void ChatControlsOnMessageSubmitted(object sender, ChatControls.MessageEventArgs messageEventArgs)
@@ -102,6 +102,12 @@ namespace Q3Client
             MainGrid.RaiseEvent(new RoutedEventArgs(FlashEvent));
         }
 
+        private void RaiseStopFlashEvent()
+        {
+            MainGrid.RaiseEvent(new RoutedEventArgs(StopFlashEvent));
+        }
+
+
         private async Task UpdateHashtagImage()
         {
             var hashtag = HashtagParser.FindHashtags(queue.Name).FirstOrDefault();
@@ -150,11 +156,13 @@ namespace Q3Client
         public event EventHandler<QueueActionEventArgs> JoinQueue;
         public event EventHandler<QueueActionEventArgs> LeaveQueue;
         public event EventHandler<QueueActionEventArgs> ActivateQueue;
+        public event EventHandler<QueueActionEventArgs> DeactivateQueue;
         public event EventHandler<QueueActionEventArgs> CloseQueue;
         public event EventHandler<QueueMessageEventArgs> SendMessage;
         public event EventHandler<QueueActionEventArgs> NagQueue;
 
         public static readonly RoutedEvent FlashEvent = EventManager.RegisterRoutedEvent("Flash", RoutingStrategy.Direct, typeof(RoutedEventHandler), typeof(QueueNotification));
+        public static readonly RoutedEvent StopFlashEvent = EventManager.RegisterRoutedEvent("StopFlash", RoutingStrategy.Direct, typeof(RoutedEventHandler), typeof(QueueNotification));
 
         public event RoutedEventHandler Flash
         {
@@ -169,20 +177,39 @@ namespace Q3Client
             }
         }
 
+        public event RoutedEventHandler StopFlash
+        {
+            add
+            {
+                this.AddHandler(FlashEvent, value);
+            }
+
+            remove
+            {
+                this.RemoveHandler(FlashEvent, value);
+            }
+        }
 
         private void ButtonJoin_Click(object sender, RoutedEventArgs e)
         {
+            RaiseStopFlashEvent();
             JoinQueue.SafeInvoke(this, new QueueActionEventArgs(queue));
         }
 
         private void ButtonLeave_Click(object sender, RoutedEventArgs e)
         {
+            RaiseStopFlashEvent();
             LeaveQueue.SafeInvoke(this, new QueueActionEventArgs(queue));
         }
 
         private void StartQueue(object sender, RoutedEventArgs e)
         {
+            RaiseStopFlashEvent();
             ActivateQueue.SafeInvoke(this, new QueueActionEventArgs(queue));
+        }
+        private void ResetQueue(object sender, RoutedEventArgs e)
+        {
+            DeactivateQueue.SafeInvoke(this, new QueueActionEventArgs(queue));
         }
 
         private void EndQueue(object sender, RoutedEventArgs e)
@@ -216,6 +243,7 @@ namespace Q3Client
         {
             var visibility = queue.Status == QueueStatus.Activated ? Visibility.Collapsed : Visibility.Visible;        
             MenuItem_StartQueue.Visibility = MenuItem_NagQueue.Visibility = visibility;
+            MenuItem_ResetQueue.Visibility = queue.Status == QueueStatus.Activated ? Visibility.Visible : Visibility.Collapsed; ;
         }
     }
 }

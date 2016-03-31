@@ -28,23 +28,34 @@
                 <DataTrigger Binding="{Binding Path=Status}" Value="Activated">
                     <Setter Property="Background" Value="{StaticResource GreenBackgroundBrush}" />
                     <DataTrigger.EnterActions>
-                        <BeginStoryboard>
+                        <BeginStoryboard Name="ActivateStoryboard">
                             <Storyboard>
-                                <ColorAnimation  By="#ccc" Storyboard.TargetProperty="Background.(SolidColorBrush.Color)" FillBehavior="Stop" AutoReverse="True"  Duration="0:0:0.5"/>
+                                <ColorAnimation  By="#ccc" Storyboard.TargetProperty="Background.(SolidColorBrush.Color)" FillBehavior="Stop" AutoReverse="True" Duration="0:0:1" RepeatBehavior="Forever" />
                             </Storyboard>
                         </BeginStoryboard>
                     </DataTrigger.EnterActions>
                 </DataTrigger>
                 <EventTrigger RoutedEvent="Loaded">
-                    <BeginStoryboard>
+                    <BeginStoryboard Name="LoadedStoryboard">
                         <Storyboard>
-                            <ColorAnimation  By="#ccc" Storyboard.TargetProperty="Background.(SolidColorBrush.Color)" FillBehavior="Stop" AutoReverse="True"  Duration="0:0:0.5"/>
+                            <ColorAnimation  By="#ccc" Storyboard.TargetProperty="Background.(SolidColorBrush.Color)" FillBehavior="Stop" AutoReverse="True"  Duration="0:0:1" RepeatBehavior="Forever" />
                         </Storyboard>
                     </BeginStoryboard>
                 </EventTrigger>
                 <EventTrigger RoutedEvent="q3Client:QueueNotification.Flash">
-                    <BeginStoryboard Storyboard="{StaticResource FlashStoryboard}" />
+                    <BeginStoryboard Storyboard="{StaticResource FlashStoryboard}" Name="FlashStoryboard"/>
                 </EventTrigger>
+                <EventTrigger RoutedEvent="MouseLeftButtonUp">
+                    <StopStoryboard BeginStoryboardName="FlashStoryboard"/>
+                    <StopStoryboard BeginStoryboardName="LoadedStoryboard"/>
+                    <StopStoryboard BeginStoryboardName="ActivateStoryboard"/>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="q3Client:QueueNotification.StopFlash">
+                    <StopStoryboard BeginStoryboardName="FlashStoryboard"/>
+                    <StopStoryboard BeginStoryboardName="LoadedStoryboard"/>
+                    <StopStoryboard BeginStoryboardName="ActivateStoryboard"/>
+                </EventTrigger>
+
             </Style.Triggers>
         </Style>
 
@@ -177,6 +188,7 @@
     <StackPanel Name="OuterPanel">
         <StackPanel.ContextMenu>
             <ContextMenu>
+                <MenuItem Name="MenuItem_ResetQueue" Header="Reset Queue" Click="ResetQueue" Visibility="Collapsed"/>
                 <MenuItem Name="MenuItem_StartQueue" Header="Start Queue" Click="StartQueue" Visibility="Collapsed"/>
                 <MenuItem Name="MenuItem_NagQueue" Header="Nag for more people" Click="NagQueueClicked" Visibility="Collapsed"/>
                 <MenuItem Name="MenuItem_EndQueue" Header="Delete Queue" Click="EndQueue" />
@@ -193,8 +205,8 @@
                 <ColumnDefinition Width="*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
-            <Label Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Margin="5" Style="{StaticResource HashtagPlaceholder}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxHeight="92" FontSize="50">Q</Label>
-            <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Name="HashtagImage" Height="92" Width="80" StretchDirection="DownOnly"  MaxHeight="92" MaxWidth="80"/>
+            <Label Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Margin="5,4,3,4" Style="{StaticResource HashtagPlaceholder}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxHeight="92" FontSize="50">Q</Label>
+            <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Margin="5,4,3,4" Name="HashtagImage" Height="92" Width="80" StretchDirection="DownOnly"  MaxHeight="92" MaxWidth="80"/>
 
             <StackPanel Grid.Column="1" Grid.Row="0">
                 <DockPanel>
