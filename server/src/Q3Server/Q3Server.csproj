@@ -150,7 +150,11 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ObjectGetterCached.cs" />
+    <Compile Include="ObjectGetterTernary.cs" />
+    <Compile Include="UserGetterDomain.cs" />
     <Compile Include="DuplicateQueueException.cs" />
+    <Compile Include="Interfaces\IObjectGetter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QEventsListener.cs" />
     <Compile Include="QHub.cs" />
@@ -162,8 +166,9 @@
     <Compile Include="SimpleHeaderAuthenticator.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="User.cs" />
-    <Compile Include="UserManager.cs" />
+    <Compile Include="UserGetterSerialized.cs" />
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
